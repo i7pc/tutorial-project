@@ -1,10 +1,9 @@
 import os
+from pathlib import path
 import re
 import shutil
 
-# блок коду задання ввідних даних
-# ввідні дані відомих розширень
-
+# створюємо переліки відомих розширень за назвами
 image_extantion = ('png', 'jpg', 'svg', 'jpeg')
 video_extantion = ('AVI', 'MP4', 'MOV', 'MKV')
 docs_extantion = ('DOC', 'DOCX', 'TXT', 'pdf', 'XLSX',
@@ -14,19 +13,14 @@ zip_extantion = ('zip', 'GZ', 'TAR')
 draw_extantion = ('dwg', 'dxf')
 BASE_FILE_EXTANTION = (image_extantion + video_extantion + docs_extantion +
                        music_extantion + draw_extantion + zip_extantion + draw_extantion)
-find_know_extention = []
-find_anknown_extantion = []
 
-# ввідні дані для транслітерації
-CYRILLIC_SYMBOLS = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяєіїґ"
-TRANSLATION = ("a", "b", "v", "g", "d", "e", "e", "j", "z", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u",
-               "f", "h", "ts", "ch", "sh", "sch", "", "y", "", "e", "yu", "ya", "je", "i", "ji", "g")
-TRANS = {}  # створюємо словник перекладу.
-
-# ф-ція приймає ім'я файла і перевіряє його, чи відоме розширення
+""" ф-ція приймає ім'я файла і перевіряє його, чи відоме розширення """
 
 
 def know_extention_file(file):
+    find_know_extention = []
+    find_anknown_extantion = []
+    # шукаємо індекс крапки справ аби відділити розширення
     index_symbol = file.rfind('.')
     e_f = (file[index_symbol+1:])  # вивід розширення
     if e_f in BASE_FILE_EXTANTION:
@@ -38,9 +32,15 @@ def know_extention_file(file):
     return k_x  # True|False
 
 
-# ф-ція яка перекладає назву з кирилиці на латиницю і змінює всі символі на "_"
+""" ф-ція Normolize яка перекладає назву з кирилиці на латиницю і змінює всі символі на "_" """
+
 
 def normalize(file):
+    # ввідні дані для транслітерації
+    CYRILLIC_SYMBOLS = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяєіїґ"
+    TRANSLATION = ("a", "b", "v", "g", "d", "e", "e", "j", "z", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u",
+                   "f", "h", "ts", "ch", "sh", "sch", "", "y", "", "e", "yu", "ya", "je", "i", "ji", "g")
+    TRANS = {}  # створюємо словник перекладу.
     index_symbol = file.rfind('.')  # шукаємо символ "крапка" справа
     e_f = (file[index_symbol:])  # зрізаємо аби виділити розширення файла
     name_file = (file[:index_symbol])  # зрізаємо аби виділити назву файла
@@ -55,7 +55,11 @@ def normalize(file):
     new_name_file = os.path.join(BASE_DIR, name_file + e_f)
     old_name = os.path.join(BASE_DIR, file)
     # переназва файлу
-    return os.rename(old_name, new_name_file)
+    file = os.rename(old_name, new_name_file)
+    return file
+
+
+""" Ф-ція ___ яка створює диерктоурію, якщо її немає і переміщує туди файли з вказаним розиренням"""
 
 
 def work_f(name):
@@ -66,26 +70,13 @@ def work_f(name):
     os.replace(file_path, new_file)  # переміщуємо файл
 
 
-"""Початок програмного коду"""
+"""++++"""
 BASE_DIR = 'C:/Users/v4erednyk/Desktop/Somfiles'
-all_files = os.listdir(BASE_DIR)
 
-for file in all_files:  # перебираюємо всі файл і забираємо їх шляхи
-    file_path = os.path.join(BASE_DIR, file)
+"""ф-ція сортування"""
 
-    """ викликаємо ф-цію і перевіряємо, 
-    чи відоме розширення нам чи ні. 
-    Якщо так - то прапорець k_x = True. Також надає 
-    2 переліки. Знайдених відомих та невідомих розширень
-    """
-    know_extention_file(file)
-    """ викликаємо ф-цію для транслітерації кирилічних символів
-    в латиницю. А також всі символи, крім латиници та цифр на "_"
-    """
-    normalize(file)
 
-    """ф-ція сортування файлів
-    """
+def sort(file):
     if file_path.endswith(image_extantion):
 
         work_f("images")
@@ -108,3 +99,35 @@ for file in all_files:  # перебираюємо всі файл і забир
         work_f("draws")
     else:
         work_f("aknowns")
+
+    """ викликаємо ф-цію і перевіряємо, 
+    чи відоме розширення нам чи ні. 
+    Якщо так - то прапорець k_x = True. Також надає 
+    2 переліки. Знайдених відомих та невідомих розширень
+    """
+    know_extention_file(file)
+    """ викликаємо ф-цію для транслітерації кирилічних символів
+    в латиницю. А також всі символи, крім латиници та цифр на "_"
+    """
+    normalize(file)
+
+
+"""ф-ція проходу проходу по каталогу"""
+
+
+def in_folder(dir_path):
+    # створюємо перелік вмісту файлів та директорій всередині
+    all_files = os.listdir(dir_path)
+    if all_files:  # перевіряємо чи не порожня вона
+        for file in all_files:  # перебираюємо всі файли і забираємо їх шляхи
+            # створюємо шлях до файлу\директорії
+            file_path = os.path.join(dir_path, file)
+            if os.path.isdir(file_path):  # якщо директорія то
+                normalize(file)  # нормалізуємо назву директорії
+                # стоврюємо шлях до директорії
+                dir_p = os.path.join(dir_path, file)
+                in_folder(dir_p)  # викликаємо ф-цію аби зайтий в директорію
+            elif not os.path.isdir(file_path):
+                sort(file)  # сортування файлів
+    else:  # директорія порожня і її необхідно видалити
+        os.path.mrdir()  # видаляэмо директорію
