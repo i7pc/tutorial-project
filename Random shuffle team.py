@@ -1,13 +1,18 @@
 import random  # модуль випадковості вибору
-team_3 = ['Mykhailo', 'Vitalii', 'Volodymyr',
-          'Yaroslav', 'Yehor', 'Vadim', 'Sergii']  # завдання списку (інформації) (Про Тетяну Ми пам'ятаємо завжди! Просто зараз не враховуємо)
-i = 1
-# створення змінної кількість повторів ітерацій (дій, проходів по циклу)
-member_team_3 = []  # створення змінної-списку, куди буде записуватись участник команди
-while i < 8:  # цикл проходу по переліку/списку
-    random.shuffle(team_3)  # функція перемішування переліку
-    # функція яка дістає із переліку team_3 останній елемент і записує його в змінну member_team_3
-    member_team_3 = team_3.pop()
-    i += 1  # рахунок ітерацій
-    print(i, '.', member_team_3)
-    # вивід на екран значення змінних i member_team_3
+
+team = []
+while True:
+    # запускаємо нескінченний цикл введення членів команди
+    member = input("Enter Name of the member or enter end for finisch: ")
+    if member == 'end':
+        break
+    team.append(member)
+iterable_operation = len(team)
+
+while 0 < iterable_operation:
+    # цикл витягує ім"я
+    random.shuffle(team)  # перемішує перелік
+    member_of_team = team.pop()  # витягає ім"я
+    # виводить номер, через крапку ім"я
+    print(iterable_operation, '.', member_of_team)
+    iterable_operation -= 1
